@@ -1,6 +1,12 @@
 from setuptools import setup
+import os
 
 from xlrd2.info import __VERSION__
+
+project_dir = os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(project_dir, 'README.md')) as f:
+    long_description = f.read()
 
 setup(
     name = 'xlrd2',
@@ -13,14 +19,9 @@ setup(
     ],
     description = (
         'Library for developers to extract data from '
-        'Microsoft Excel (tm) spreadsheet files'
+        'Microsoft Excel legacy spreadsheet files (xls)'
     ),
-    long_description = (
-        "Extract data from Excel spreadsheets "
-        "(.xls and .xlsx, versions 2.0 onwards) on any platform. "
-        "Pure Python (2.7, 3.4+). "
-        "Strong support for Excel dates. Unicode-aware."
-    ),
+    long_description = long_description,
     platforms = ["Any platform -- don't need Windows"],
     license = 'Apache License 2.0',
     keywords = ['xls', 'excel', 'spreadsheet', 'workbook'],

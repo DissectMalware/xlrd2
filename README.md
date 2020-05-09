@@ -7,6 +7,27 @@ The main goal is to make it suitable for extracting necessary information from m
 
 **Versions of Python supported**: 2.7, 3.4+.
 
+**Installation:**
+
+1. Installing using pip
+
+        pip install xlrd2
+
+2. Installing the latest development
+ 
+   Using pip
+
+        pip install -U https://github.com/DissectMalware/xlrd2/archive/master.zip
+
+   Or download the latest version
+   
+        wget https://github.com/DissectMalware/xlrd2/archive/master.zip
+
+   Extract the zip file and go to the extracted directory
+   
+        python setup.py install --user
+    
+
 **Quick start**:
 
 ```python
