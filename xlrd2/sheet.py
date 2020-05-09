@@ -505,7 +505,7 @@ class Sheet(BaseObject):
             try:
                 yield self.row(index)
             except IndexError:
-                continue
+                yield None
 
 
     # makes `for row in sheet` natural and intuitive
