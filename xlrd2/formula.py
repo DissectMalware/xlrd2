@@ -121,7 +121,7 @@ onames = ['Unk00', 'Exp', 'Tbl', 'Add', 'Sub', 'Mul', 'Div', 'Power', 'Concat', 
 func_defs = {
     # index: (name, min#args, max#args, flags, #known_args, return_type, kargs)
     0  : ('COUNT',            0, 30, 0x04,  1, 'V', 'R'),
-    1  : ('IF',               2,  3, 0x04,  3, 'V', 'VRR'),
+    1  : ('IF',               1,  3, 0x04,  3, 'V', 'VRR'),
     2  : ('ISNA',             1,  1, 0x02,  1, 'V', 'V'),
     3  : ('ISERROR',          1,  1, 0x02,  1, 'V', 'V'),
     4  : ('SUM',              0, 30, 0x04,  1, 'V', 'R'),
