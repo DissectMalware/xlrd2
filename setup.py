@@ -17,6 +17,7 @@ setup(
     scripts = [
         'scripts/runxlrd2.py',
     ],
+    long_description_content_type="text/markdown",
     description = (
         'Library for developers to extract data from '
         'Microsoft Excel legacy spreadsheet files (xls)'
