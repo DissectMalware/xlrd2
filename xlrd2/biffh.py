@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Portions copyright © 2005-2010 Stephen John Machin, Lingfo Pty Ltd
-# This module is part of the xlrd package, which is released under a
+# This module is part of the xlrd2 package, which is released under a
 # BSD-style licence.
 from __future__ import print_function
 
@@ -104,8 +104,10 @@ BIFF_FIRST_UNICODE = 80
 XL_WORKBOOK_GLOBALS = WBKBLOBAL = 0x5
 XL_WORKBOOK_GLOBALS_4W = 0x100
 XL_WORKSHEET = WRKSHEET = 0x10
+XL_MACROSHEET = 0x40
 
 XL_BOUNDSHEET_WORKSHEET = 0x00
+XL_BOUNDSHEET_MACROSHEET = 0x01
 XL_BOUNDSHEET_CHART     = 0x02
 XL_BOUNDSHEET_VB_MODULE = 0x06
 

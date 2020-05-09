@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Copyright (c) 2005-2012 Stephen John Machin, Lingfo Pty Ltd
-# This script is part of the xlrd package, which is released under a
+# This script is part of the xlrd2 package, which is released under a
 # BSD-style licence.
 
 from __future__ import print_function
@@ -22,7 +22,7 @@ names           Print brief information for each NAME record
 ov              Overview of file
 profile         Like "hotshot", but uses cProfile
 show            Print the contents of all rows in each sheet
-version[0]      Print versions of xlrd and Python and exit
+version[0]      Print versions of xlrd2 and Python and exit
 xfc             Print "XF counts" and cell-type counts -- see code for details
 
 [0] means no file arg
@@ -31,14 +31,14 @@ xfc             Print "XF counts" and cell-type counts -- see code for details
 
 options = None
 if __name__ == "__main__":
-    import xlrd
+    import xlrd2
     import sys
     import time
     import glob
     import traceback
     import gc
 
-    from xlrd.timemachine import xrange, REPR
+    from xlrd2.timemachine import xrange, REPR
 
 
     class LogHandler(object):
@@ -58,7 +58,7 @@ if __name__ == "__main__":
                 self.shown = 1
             self.logfileobj.write(text)
 
-    null_cell = xlrd.empty_cell
+    null_cell = xlrd2.empty_cell
 
     def show_row(bk, sh, rowx, colrange, printit):
         if bk.ragged_rows:
@@ -69,11 +69,11 @@ if __name__ == "__main__":
             for colx, ty, val, cxfx in get_row_data(bk, sh, rowx, colrange):
                 if printit:
                     print("cell %s%d: type=%d, data: %r, xfx: %s"
-                        % (xlrd.colname(colx), rowx+1, ty, val, cxfx))
+                          % (xlrd2.colname(colx), rowx + 1, ty, val, cxfx))
         else:
             for colx, ty, val, _unused in get_row_data(bk, sh, rowx, colrange):
                 if printit:
-                    print("cell %s%d: type=%d, data: %r" % (xlrd.colname(colx), rowx+1, ty, val))
+                    print("cell %s%d: type=%d, data: %r" % (xlrd2.colname(colx), rowx + 1, ty, val))
 
     def get_row_data(bk, sh, rowx, colrange):
         result = []
@@ -87,14 +87,14 @@ if __name__ == "__main__":
                 cxfx = str(sh.cell_xf_index(rowx, colx))
             else:
                 cxfx = ''
-            if cty == xlrd.XL_CELL_DATE:
+            if cty == xlrd2.XL_CELL_DATE:
                 try:
-                    showval = xlrd.xldate_as_tuple(cval, dmode)
-                except xlrd.XLDateError as e:
+                    showval = xlrd2.xldate_as_tuple(cval, dmode)
+                except xlrd2.XLDateError as e:
                     showval = "%s:%s" % (type(e).__name__, e)
-                    cty = xlrd.XL_CELL_ERROR
-            elif cty == xlrd.XL_CELL_ERROR:
-                showval = xlrd.error_text_from_code.get(cval, '<Unknown error code 0x%02x>' % cval)
+                    cty = xlrd2.XL_CELL_ERROR
+            elif cty == xlrd2.XL_CELL_ERROR:
+                showval = xlrd2.error_text_from_code.get(cval, '<Unknown error code 0x%02x>' % cval)
             else:
                 showval = cval
             result.append((colx, cty, showval, cxfx))
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     def bk_header(bk):
         print()
         print("BIFF version: %s; datemode: %s"
-            % (xlrd.biff_text_from_num[bk.biff_version], bk.datemode))
+              % (xlrd2.biff_text_from_num[bk.biff_version], bk.datemode))
         print("codepage: %r (encoding: %s); countries: %r"
             % (bk.codepage, bk.encoding, bk.countries))
         print("Last saved by: %r" % bk.user_name)
@@ -144,10 +144,10 @@ if __name__ == "__main__":
         if not labs:return
         for rlo, rhi, clo, chi in labs:
             print("%s label range %s:%s contains:"
-                % (title, xlrd.cellname(rlo, clo), xlrd.cellname(rhi-1, chi-1)))
+                  % (title, xlrd2.cellname(rlo, clo), xlrd2.cellname(rhi - 1, chi - 1)))
             for rx in xrange(rlo, rhi):
                 for cx in xrange(clo, chi):
-                    print("    %s: %r" % (xlrd.cellname(rx, cx), sh.cell_value(rx, cx)))
+                    print("    %s: %r" % (xlrd2.cellname(rx, cx), sh.cell_value(rx, cx)))
 
     def show_labels(bk):
         # bk_header(bk)
@@ -169,7 +169,7 @@ if __name__ == "__main__":
     def show(bk, nshow=65535, printit=1):
         bk_header(bk)
         if 0:
-            rclist = xlrd.sheet.rc_stats.items()
+            rclist = xlrd2.sheet.rc_stats.items()
             rclist = sorted(rclist)
             print("rc stats")
             for k, v in rclist:
@@ -284,15 +284,15 @@ if __name__ == "__main__":
         elif len(args) < 2:
             oparser.error("Expected at least 2 args, found %d" % len(args))
         cmd = args[0]
-        xlrd_version = getattr(xlrd, "__VERSION__", "unknown; before 0.5")
+        xlrd_version = getattr(xlrd2, "__VERSION__", "unknown; before 0.5")
         if cmd == 'biff_dump':
-            xlrd.dump(args[1], unnumbered=options.unnumbered)
+            xlrd2.dump(args[1], unnumbered=options.unnumbered)
             sys.exit(0)
         if cmd == 'biff_count':
-            xlrd.count_records(args[1])
+            xlrd2.count_records(args[1])
             sys.exit(0)
         if cmd == 'version':
-            print("xlrd: %s, from %s" % (xlrd_version, xlrd.__file__))
+            print("xlrd2: %s, from %s" % (xlrd_version, xlrd2.__file__))
             print("Python:", sys.version)
             sys.exit(0)
         if options.logfilename:
@@ -300,7 +300,7 @@ if __name__ == "__main__":
         else:
             logfile = sys.stdout
         mmap_opt = options.mmap
-        mmap_arg = xlrd.USE_MMAP
+        mmap_arg = xlrd2.USE_MMAP
         if mmap_opt in (1, 0):
             mmap_arg = mmap_opt
         elif mmap_opt != -1:
@@ -320,7 +320,7 @@ if __name__ == "__main__":
                         print("GC before open:", n_unreachable, "unreachable objects")
                 try:
                     t0 = time.time()
-                    bk = xlrd.open_workbook(
+                    bk = xlrd2.open_workbook(
                         fname,
                         verbosity=options.verbosity, logfile=logfile,
                         use_mmap=mmap_arg,
@@ -332,7 +332,7 @@ if __name__ == "__main__":
                     t1 = time.time()
                     if not options.suppress_timing:
                         print("Open took %.2f seconds" % (t1-t0,))
-                except xlrd.XLRDError as e:
+                except xlrd2.XLRDError as e:
                     print("*** Open failed: %s: %s" % (type(e).__name__, e))
                     continue
                 except KeyboardInterrupt:

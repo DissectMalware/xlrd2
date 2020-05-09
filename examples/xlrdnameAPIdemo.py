@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
 ##
-# Module/script example of the xlrd API for extracting information
+# Module/script example of the xlrd2 API for extracting information
 # about named references, named constants, etc.
 #
 # <p>Copyright © 2006 Stephen John Machin, Lingfo Pty Ltd</p>
-# <p>This module is part of the xlrd package, which is released under a BSD-style licence.</p>
+# <p>This module is part of the xlrd2 package, which is released under a BSD-style licence.</p>
 ##
 from __future__ import print_function
 
 import glob
 import sys
 
-import xlrd
-from xlrd.timemachine import REPR
+import xlrd2
+from xlrd2.timemachine import REPR
 
 
 def scope_as_string(book, scope):
@@ -41,7 +41,7 @@ def do_scope_query(book, scope_strg, show_contents=0, f=sys.stdout):
 
 def show_name_details(book, name, show_contents=0, f=sys.stdout):
     """
-    book -- Book object obtained from xlrd.open_workbook().
+    book -- Book object obtained from xlrd2.open_workbook().
     name -- The name that's being investigated.
     show_contents -- 0: Don't; 1: Non-empty cells only; 2: All cells
     f -- Open output file handle.
@@ -74,13 +74,13 @@ def show_name_details_in_scope(book, name, scope_strg, show_contents=0, f=sys.st
     show_name_object(book, nobj, show_contents, f)
 
 def showable_cell_value(celltype, cellvalue, datemode):
-    if celltype == xlrd.XL_CELL_DATE:
+    if celltype == xlrd2.XL_CELL_DATE:
         try:
-            showval = xlrd.xldate_as_tuple(cellvalue, datemode)
-        except xlrd.XLDateError as e:
+            showval = xlrd2.xldate_as_tuple(cellvalue, datemode)
+        except xlrd2.XLDateError as e:
             showval = "%s:%s" % (type(e).__name__, e)
-    elif celltype == xlrd.XL_CELL_ERROR:
-        showval = xlrd.error_text_from_code.get(
+    elif celltype == xlrd2.XL_CELL_ERROR:
+        showval = xlrd2.error_text_from_code.get(
             cellvalue, '<Unknown error code 0x%02x>' % cellvalue)
     else:
         showval = cellvalue
@@ -99,16 +99,16 @@ def show_name_object(book, nobj, show_contents=0, f=sys.stdout):
     if kind >= 0:
         # A scalar, or unknown ... you've seen all there is to see.
         pass
-    elif kind == xlrd.oREL:
+    elif kind == xlrd2.oREL:
         # A list of Ref3D objects representing *relative* ranges
         for i in range(len(value)):
             ref3d = value[i]
-            print("Range %d: %s ==> %s"% (i, REPR(ref3d.coords), REPR(xlrd.rangename3drel(book, ref3d))), file=f)
-    elif kind == xlrd.oREF:
+            print("Range %d: %s ==> %s" % (i, REPR(ref3d.coords), REPR(xlrd2.rangename3drel(book, ref3d))), file=f)
+    elif kind == xlrd2.oREF:
         # A list of Ref3D objects
         for i in range(len(value)):
             ref3d = value[i]
-            print("Range %d: %s ==> %s"% (i, REPR(ref3d.coords), REPR(xlrd.rangename3d(book, ref3d))), file=f)
+            print("Range %d: %s ==> %s" % (i, REPR(ref3d.coords), REPR(xlrd2.rangename3d(book, ref3d))), file=f)
             if not show_contents:
                 continue
             datemode = book.datemode
@@ -120,12 +120,12 @@ def show_name_object(book, nobj, show_contents=0, f=sys.stdout):
                 for rowx in range(ref3d.rowxlo, rowlim):
                     for colx in range(ref3d.colxlo, collim):
                         cty = sh.cell_type(rowx, colx)
-                        if cty == xlrd.XL_CELL_EMPTY and show_contents == 1:
+                        if cty == xlrd2.XL_CELL_EMPTY and show_contents == 1:
                             continue
                         cval = sh.cell_value(rowx, colx)
                         sval = showable_cell_value(cty, cval, datemode)
                         print("      (%3d,%3d) %-5s: %s"
-                            % (rowx, colx, xlrd.cellname(rowx, colx), REPR(sval)), file=f)
+                              % (rowx, colx, xlrd2.cellname(rowx, colx), REPR(sval)), file=f)
 
 if __name__ == "__main__":
     def usage():
@@ -166,7 +166,7 @@ Examples (script name and glob_pattern arg omitted for brevity)
     # 2: all cells
     arg_show_contents = int(sys.argv[4])
     for fname in glob.glob(arg_pattern):
-        book = xlrd.open_workbook(fname)
+        book = xlrd2.open_workbook(fname)
         if arg_name == "*":
             # Examine book.name_obj_list to find all names
             # in a given scope ("*" => all scopes)

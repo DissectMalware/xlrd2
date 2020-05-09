@@ -3,7 +3,7 @@ import shutil
 import tempfile
 from unittest import TestCase
 
-from xlrd import open_workbook
+from xlrd2 import open_workbook
 
 from .base import from_this_dir
 

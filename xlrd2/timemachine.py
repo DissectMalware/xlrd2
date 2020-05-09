@@ -1,6 +1,6 @@
 ##
 # <p>Copyright (c) 2006-2012 Stephen John Machin, Lingfo Pty Ltd</p>
-# <p>This module is part of the xlrd package, which is released under a BSD-style licence.</p>
+# <p>This module is part of the xlrd2 package, which is released under a BSD-style licence.</p>
 ##
 
 # timemachine.py -- adaptation for single codebase.

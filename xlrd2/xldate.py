@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2005-2008 Stephen John Machin, Lingfo Pty Ltd
-# This module is part of the xlrd package, which is released under a
+# This module is part of the xlrd2 package, which is released under a
 # BSD-style licence.
 # No part of the content of this file was derived from the works of David Giffin.
 """
@@ -63,18 +63,18 @@ def xldate_as_tuple(xldate, datemode):
 
     :param xldate: The Excel number
     :param datemode: 0: 1900-based, 1: 1904-based.
-    :raises xlrd.xldate.XLDateNegative:
-    :raises xlrd.xldate.XLDateAmbiguous:
+    :raises xlrd2.xldate.XLDateNegative:
+    :raises xlrd2.xldate.XLDateAmbiguous:
 
-    :raises xlrd.xldate.XLDateTooLarge:
-    :raises xlrd.xldate.XLDateBadDatemode:
-    :raises xlrd.xldate.XLDateError:
+    :raises xlrd2.xldate.XLDateTooLarge:
+    :raises xlrd2.xldate.XLDateBadDatemode:
+    :raises xlrd2.xldate.XLDateError:
     :returns: Gregorian ``(year, month, day, hour, minute, nearest_second)``.
 
     .. warning::
 
       When using this function to interpret the contents of a workbook, you
-      should pass in the :attr:`~xlrd.book.Book.datemode`
+      should pass in the :attr:`~xlrd2.book.Book.datemode`
       attribute of that workbook. Whether the workbook has ever been anywhere
       near a Macintosh is irrelevant.
 
@@ -178,11 +178,11 @@ def xldate_from_date_tuple(date_tuple, datemode):
     :param month: ``1 <= month <= 12``
     :param day: ``1 <= day <= last day of that (year, month)``
     :param datemode: 0: 1900-based, 1: 1904-based.
-    :raises xlrd.xldate.XLDateAmbiguous:
-    :raises xlrd.xldate.XLDateBadDatemode:
-    :raises xlrd.xldate.XLDateBadTuple:
+    :raises xlrd2.xldate.XLDateAmbiguous:
+    :raises xlrd2.xldate.XLDateBadDatemode:
+    :raises xlrd2.xldate.XLDateBadTuple:
       ``(year, month, day)`` is too early/late or has invalid component(s)
-    :raises xlrd.xldate.XLDateError:
+    :raises xlrd2.xldate.XLDateError:
     """
     year, month, day = date_tuple
 
@@ -225,7 +225,7 @@ def xldate_from_time_tuple(time_tuple):
     :param hour: ``0 <= hour < 24``
     :param minute: ``0 <= minute < 60``
     :param second: ``0 <= second < 60``
-    :raises xlrd.xldate.XLDateBadTuple: Out-of-range hour, minute, or second
+    :raises xlrd2.xldate.XLDateBadTuple: Out-of-range hour, minute, or second
     """
     hour, minute, second = time_tuple
     if 0 <= hour < 24 and 0 <= minute < 60 and 0 <= second < 60:

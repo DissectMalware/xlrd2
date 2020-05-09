@@ -36,7 +36,7 @@ deploy:
     secure: BManEisxNCN966HPz8J/oYzFBPuTPFP212d8rUjv9p/W96pT0zWlO9paDce67nZiYWb7Khzg7fF5WSFpYRKsvB4a370KpTYbsAb8EPx7DUBPsz7qFC8B6EUbCXfwbe68XwPugenREby8vEtywUqxzge2SNVRPfH+wKio2hUcfEo=
   on:
     tags: true
-    repo: python-excel/xlrd
+    repo: python-excel/xlrd2
     python: "3.5"
   skip_cleanup: true
   distributions: "sdist bdist_wheel"

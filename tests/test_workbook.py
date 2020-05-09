@@ -2,10 +2,10 @@
 
 from unittest import TestCase
 
-import xlrd
-from xlrd import open_workbook
-from xlrd.book import Book
-from xlrd.sheet import Sheet
+import xlrd2
+from xlrd2 import open_workbook
+from xlrd2.book import Book
+from xlrd2.sheet import Sheet
 
 from .base import from_this_dir
 
@@ -50,13 +50,13 @@ class TestWorkbook(TestCase):
 
     def test_getitem_ix(self):
         sheet = self.book[SHEETINDEX]
-        self.assertNotEqual(xlrd.empty_cell, sheet.cell(0, 0))
-        self.assertNotEqual(xlrd.empty_cell, sheet.cell(NROWS - 1, NCOLS - 1))
+        self.assertNotEqual(xlrd2.empty_cell, sheet.cell(0, 0))
+        self.assertNotEqual(xlrd2.empty_cell, sheet.cell(NROWS - 1, NCOLS - 1))
 
     def test_getitem_name(self):
         sheet = self.book[self.sheetnames[SHEETINDEX]]
-        self.assertNotEqual(xlrd.empty_cell, sheet.cell(0, 0))
-        self.assertNotEqual(xlrd.empty_cell, sheet.cell(NROWS - 1, NCOLS - 1))
+        self.assertNotEqual(xlrd2.empty_cell, sheet.cell(0, 0))
+        self.assertNotEqual(xlrd2.empty_cell, sheet.cell(NROWS - 1, NCOLS - 1))
 
     def test_iter(self):
         sheets = [sh.name for sh in self.book]

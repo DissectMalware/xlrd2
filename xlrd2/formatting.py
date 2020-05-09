@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2005-2012 Stephen John Machin, Lingfo Pty Ltd
-# This module is part of the xlrd package, which is released under a
+# This module is part of the xlrd2 package, which is released under a
 # BSD-style licence.
 # No part of the content of this file was derived from the works of
 # David Giffin.
@@ -215,7 +215,7 @@ class Font(BaseObject, EqNeAttrs):
     family = 0
 
     #: The 0-based index used to refer to this Font() instance.
-    #: Note that index 4 is never used; xlrd supplies a dummy place-holder.
+    #: Note that index 4 is never used; xlrd2 supplies a dummy place-holder.
     font_index = 0
 
     #: Height of the font (in twips). A twip = 1/20 of a point.
@@ -336,7 +336,7 @@ class Format(BaseObject, EqNeAttrs):
     .. versionadded:: 0.6.1
     """
 
-    #: The key into :attr:`~xlrd.book.Book.format_map`
+    #: The key into :attr:`~xlrd2.book.Book.format_map`
     format_key = 0
 
     #: A classification that has been inferred from the format string.
@@ -688,7 +688,7 @@ def fill_in_standard_formats(book):
         if x not in book.format_map:
             ty = std_format_code_types[x]
             # Note: many standard format codes (mostly CJK date formats) have
-            # format strings that vary by locale; xlrd does not (yet)
+            # format strings that vary by locale; xlrd2 does not (yet)
             # handle those; the type (date or numeric) is recorded but the fmt_str will be None.
             fmt_str = std_format_strings.get(x)
             fmtobj = Format(x, ty, fmt_str)
@@ -1291,13 +1291,13 @@ class XF(BaseObject):
 
     _protection_flag = 0
 
-    #: Index into :attr:`~xlrd.book.Book.xf_list`
+    #: Index into :attr:`~xlrd2.book.Book.xf_list`
     xf_index = 0
 
-    #: Index into :attr:`~xlrd.book.Book.font_list`
+    #: Index into :attr:`~xlrd2.book.Book.font_list`
     font_index = 0
 
-    #: Key into :attr:`~xlrd.book.Book.format_map`
+    #: Key into :attr:`~xlrd2.book.Book.format_map`
     #:
     #: .. warning::
     #:   OOo docs on the XF record call this "Index to FORMAT record".

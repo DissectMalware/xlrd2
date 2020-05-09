@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2005-2013 Stephen John Machin, Lingfo Pty Ltd
-# This module is part of the xlrd package, which is released under a
+# This module is part of the xlrd2 package, which is released under a
 # BSD-style licence.
 
 from __future__ import print_function
@@ -62,14 +62,14 @@ class Sheet(BaseObject):
     .. warning::
 
       You don't instantiate this class yourself. You access :class:`Sheet`
-      objects via the :class:`~xlrd.book.Book` object that
-      was returned when you called :func:`xlrd.open_workbook`.
+      objects via the :class:`~xlrd2.book.Book` object that
+      was returned when you called :func:`xlrd2.open_workbook`.
     """
 
     #: Name of sheet.
     name = ''
 
-    #: A reference to the :class:`~xlrd.book.Book` object to which this sheet
+    #: A reference to the :class:`~xlrd2.book.Book` object to which this sheet
     #: belongs.
     #:
     #: Example usage: ``some_sheet.book.datemode``
@@ -80,8 +80,8 @@ class Sheet(BaseObject):
 
     #: Nominal number of columns in sheet. It is one more than the maximum
     #: column index found, ignoring trailing empty cells.
-    #: See also the ``ragged_rows`` parameter to :func:`~xlrd.open_workbook`
-    #: and :meth:`~xlrd.sheet.Sheet.row_len`.
+    #: See also the ``ragged_rows`` parameter to :func:`~xlrd2.open_workbook`
+    #: and :meth:`~xlrd2.sheet.Sheet.row_len`.
     ncols = 0
 
 
@@ -89,7 +89,7 @@ class Sheet(BaseObject):
     #: an entry in ``COLINFO`` records for all column indexes in ``range(257)``.
     #:
     #: .. note::
-    #:   xlrd ignores the entry for the non-existent
+    #:   xlrd2 ignores the entry for the non-existent
     #:   257th column.
     #:
     #: On the other hand, there may be no entry for unused columns.
@@ -257,7 +257,7 @@ class Sheet(BaseObject):
     hyperlink_list = []
 
     #: A sparse mapping from ``(rowx, colx)`` to an item in
-    #: :attr:`~xlrd.sheet.Sheet.hyperlink_list`.
+    #: :attr:`~xlrd2.sheet.Sheet.hyperlink_list`.
     #: Cells not covered by a hyperlink are not mapped.
     #: It is possible using the Excel UI to set up a hyperlink that
     #: covers a larger-than-1x1 rectangle of cells.
@@ -265,7 +265,7 @@ class Sheet(BaseObject):
     #: When a multiply-covered cell is clicked on, the hyperlink that is
     #: activated
     #: (and the one that is mapped here) is the last in
-    #: :attr:`~xlrd.sheet.Sheet.hyperlink_list`.
+    #: :attr:`~xlrd2.sheet.Sheet.hyperlink_list`.
     #:
     #: .. versionadded:: 0.7.2
     hyperlink_map = {}
@@ -316,7 +316,8 @@ class Sheet(BaseObject):
     #: .. versionadded:: 0.7.2
     vertical_page_breaks = []
 
-    def __init__(self, book, position, name, number):
+
+    def __init__(self, book, position, name, number, sheet_type= XL_WORKSHEET):
         self.book = book
         self.biff_version = book.biff_version
         self._position = position
@@ -328,6 +329,11 @@ class Sheet(BaseObject):
         self.verbosity = book.verbosity
         self.formatting_info = book.formatting_info
         self.ragged_rows = book.ragged_rows
+
+        #xlrd2
+        self.boundsheet_type = sheet_type
+        self.formula_map = {}
+
         if self.ragged_rows:
             self.put_cell = self.put_cell_ragged
         else:
@@ -369,7 +375,7 @@ class Sheet(BaseObject):
         self.hyperlink_map = {}
         self.cell_note_map = {}
 
-        # Values calculated by xlrd to predict the mag factors that
+        # Values calculated by xlrd2 to predict the mag factors that
         # will actually be used by Excel to display your worksheet.
         # Pass these values to xlwt when writing XLS files.
         # Warning 1: Behaviour of OOo Calc and Gnumeric has been observed to differ from Excel's.
@@ -429,7 +435,7 @@ class Sheet(BaseObject):
     def cell_xf_index(self, rowx, colx):
         """
         XF index of the cell in the given row and column.
-        This is an index into :attr:`~xlrd.book.Book.xf_list`.
+        This is an index into :attr:`~xlrd2.book.Book.xf_list`.
 
         .. versionadded:: 0.6.1
         """
@@ -790,7 +796,7 @@ class Sheet(BaseObject):
         DEBUG = 0
         blah = DEBUG or self.verbosity >= 2
         blah_rows = DEBUG or self.verbosity >= 4
-        blah_formulas = 0 and blah
+        blah_formulas = True
         r1c1 = 0
         oldpos = bk._position
         bk._position = self._position
@@ -936,11 +942,13 @@ class Sheet(BaseObject):
                     rowx, colx, cell_attr,  result_str, flags = local_unpack('<HH3s8sB', data[0:16])
                     xf_index =  self.fixed_BIFF2_xfindex(cell_attr, rowx, colx)
                 if blah_formulas: # testing formula dumper
-                    #### XXXX FIXME
-                    fprintf(self.logfile, "FORMULA: rowx=%d colx=%d\n", rowx, colx)
+                    if DEBUG:
+                        fprintf(self.logfile, "FORMULA: rowx=%d colx=%d\n", rowx, colx)
                     fmlalen = local_unpack("<H", data[20:22])[0]
-                    decompile_formula(bk, data[22:], fmlalen, FMLA_TYPE_CELL,
-                        browx=rowx, bcolx=colx, blah=1, r1c1=r1c1)
+                    formula = decompile_formula(bk, data[22:], fmlalen, FMLA_TYPE_CELL,
+                        browx=rowx, bcolx=colx, blah=0, r1c1=r1c1)
+
+                    self.formula_map[(colx, rowx)] = formula
                 if result_str[6:8] == b"\xFF\xFF":
                     first_byte = BYTES_ORD(result_str[0])
                     if first_byte == 0:
@@ -2259,8 +2267,8 @@ class Cell(BaseObject):
     .. warning::
       You don't call this class yourself. You access :class:`Cell` objects
       via methods of the :class:`Sheet` object(s) that you found in the
-      :class:`~xlrd.book.Book` object that was returned when you called
-      :func:`~xlrd.open_workbook`
+      :class:`~xlrd2.book.Book` object that was returned when you called
+      :func:`~xlrd2.open_workbook`
 
     Cell objects have three attributes: ``ctype`` is an int, ``value``
     (which depends on ``ctype``) and ``xf_index``.
@@ -2367,7 +2375,7 @@ class Colinfo(BaseObject):
       ``COLINFO`` record, the ``DEFCOLWIDTH`` record of the worksheet will be
       used instead.
 
-    xlrd goes with the GCW version of the story.
+    xlrd2 goes with the GCW version of the story.
     Reference to the source may be useful: see
     :meth:`Sheet.computed_column_width`.
 
@@ -2432,7 +2440,7 @@ class Rowinfo(BaseObject):
 
         #: 1 = Outline group starts or ends here (depending on where the
         #: outline buttons are located, see ``WSBOOL`` record, which is not
-        #: parsed by xlrd), *and* is collapsed.
+        #: parsed by xlrd2), *and* is collapsed.
         self.outline_group_starts_ends = None
 
         #: 1 = Row is hidden (manually, or by a filter or outline group)
@@ -2444,7 +2452,7 @@ class Rowinfo(BaseObject):
         #: 1 = the xf_index attribute is usable; 0 = ignore it.
         self.has_default_xf_index = None
 
-        #: Index to default :class:`~xlrd.formatting.XF` record for empty cells
+        #: Index to default :class:`~xlrd2.formatting.XF` record for empty cells
         #: in this row. Don't use this if ``has_default_xf_index == 0``.
         self.xf_index = None
 

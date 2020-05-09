@@ -1,7 +1,7 @@
 import sys
 import unittest
 
-from xlrd import biffh
+from xlrd2 import biffh
 
 if sys.version_info[0] >= 3:
     from io import StringIO
