@@ -22,12 +22,12 @@ setup(
         "Strong support for Excel dates. Unicode-aware."
     ),
     platforms = ["Any platform -- don't need Windows"],
-    license = 'BSD',
+    license = 'Apache License 2.0',
     keywords = ['xls', 'excel', 'spreadsheet', 'workbook'],
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
