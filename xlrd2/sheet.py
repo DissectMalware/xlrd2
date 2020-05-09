@@ -501,7 +501,12 @@ class Sheet(BaseObject):
 
     def get_rows(self):
         "Returns a generator for iterating through each row."
-        return (self.row(index) for index in range(self.nrows))
+        for index in range(self.nrows):
+            try:
+                yield self.row(index)
+            except IndexError:
+                continue
+
 
     # makes `for row in sheet` natural and intuitive
     __iter__ = get_rows
