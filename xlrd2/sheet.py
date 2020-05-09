@@ -332,7 +332,6 @@ class Sheet(BaseObject):
 
         #xlrd2
         self.boundsheet_type = sheet_type
-        self.formula_map = {}
 
         if self.ragged_rows:
             self.put_cell = self.put_cell_ragged
@@ -346,6 +345,7 @@ class Sheet(BaseObject):
         self._dimnrows = 0 # as per DIMENSIONS record
         self._dimncols = 0
         self._cell_values = []
+        self._cell_formulas = []
         self._cell_types = []
         self._cell_xf_indexes = []
         self.defcolwidth = None
@@ -415,8 +415,11 @@ class Sheet(BaseObject):
         else:
             xfx = None
         return Cell(
+            rowx,
+            colx,
             self._cell_types[rowx][colx],
             self._cell_values[rowx][colx],
+            self._cell_formulas[rowx][colx],
             xfx,
         )
 
@@ -657,7 +660,7 @@ class Sheet(BaseObject):
                     if s_fmt_info:
                         s_cell_xf_indexes[rowx][rlen:] = self.bf * nextra
 
-    def put_cell_ragged(self, rowx, colx, ctype, value, xf_index):
+    def put_cell_ragged(self, rowx, colx, ctype, value, xf_index, formula=None):
         if ctype is None:
             # we have a number, so look up the cell type
             ctype = self._xf_index_to_xl_type_map[xf_index]
@@ -671,18 +674,21 @@ class Sheet(BaseObject):
 
                 scta = self._cell_types.append
                 scva = self._cell_values.append
+                scfo = self._cell_formulas.append
                 scxa = self._cell_xf_indexes.append
                 bt = self.bt
                 bf = self.bf
                 for _unused in xrange(self.nrows, nr):
                     scta(bt * 0)
                     scva([])
+                    scfo([])
                     if fmt_info:
                         scxa(bf * 0)
                 self.nrows = nr
 
             types_row = self._cell_types[rowx]
             values_row = self._cell_values[rowx]
+            formulas_row = self._cell_formulas[rowx]
             if fmt_info:
                 fmt_row = self._cell_xf_indexes[rowx]
             ltr = len(types_row)
@@ -694,6 +700,7 @@ class Sheet(BaseObject):
                 # self._put_cell_cells_appended += 1
                 types_row.append(ctype)
                 values_row.append(value)
+                formulas_row.append(formula)
                 if fmt_info:
                     fmt_row.append(xf_index)
                 return
@@ -706,17 +713,19 @@ class Sheet(BaseObject):
                 #     fmt_row.extend(self.bf * num_empty)
                 types_row[ltr:] = self.bt * num_empty
                 values_row[ltr:] = [UNICODE_LITERAL('')] * num_empty
+                formulas_row[ltr:] = [UNICODE_LITERAL('')] * num_empty
                 if fmt_info:
                     fmt_row[ltr:] = self.bf * num_empty
             types_row[colx] = ctype
             values_row[colx] = value
+            formulas_row[colx] = formula
             if fmt_info:
                 fmt_row[colx] = xf_index
         except:
             print("put_cell", rowx, colx, file=self.logfile)
             raise
 
-    def put_cell_unragged(self, rowx, colx, ctype, value, xf_index):
+    def put_cell_unragged(self, rowx, colx, ctype, value, xf_index, formula= None):
         if ctype is None:
             # we have a number, so look up the cell type
             ctype = self._xf_index_to_xl_type_map[xf_index]
@@ -725,6 +734,7 @@ class Sheet(BaseObject):
         try:
             self._cell_types[rowx][colx] = ctype
             self._cell_values[rowx][colx] = value
+            self._cell_formulas[rowx][colx] = formula
             if self.formatting_info:
                 self._cell_xf_indexes[rowx][colx] = xf_index
         except IndexError:
@@ -760,9 +770,11 @@ class Sheet(BaseObject):
                     if self.formatting_info:
                         self._cell_xf_indexes[rowx].extend(self.bf * nextra)
                     self._cell_values[rowx].extend([UNICODE_LITERAL('')] * nextra)
+                    self._cell_formulas[rowx].extend([UNICODE_LITERAL('')] * nextra)
             else:
                 scta = self._cell_types.append
                 scva = self._cell_values.append
+                scfo = self._cell_formulas.append
                 scxa = self._cell_xf_indexes.append
                 fmt_info = self.formatting_info
                 nc = self.ncols
@@ -772,6 +784,7 @@ class Sheet(BaseObject):
                     # self._put_cell_rows_appended += 1
                     scta(bt * nc)
                     scva([UNICODE_LITERAL('')] * nc)
+                    scfo([UNICODE_LITERAL('')] * nc)
                     if fmt_info:
                         scxa(bf * nc)
                 self.nrows = nr
@@ -779,6 +792,7 @@ class Sheet(BaseObject):
             try:
                 self._cell_types[rowx][colx] = ctype
                 self._cell_values[rowx][colx] = value
+                self._cell_formulas[rowx][colx] = formula
                 if self.formatting_info:
                     self._cell_xf_indexes[rowx][colx] = xf_index
             except:
@@ -941,6 +955,8 @@ class Sheet(BaseObject):
                 else: # BIFF2
                     rowx, colx, cell_attr,  result_str, flags = local_unpack('<HH3s8sB', data[0:16])
                     xf_index =  self.fixed_BIFF2_xfindex(cell_attr, rowx, colx)
+
+                formula = None
                 if blah_formulas: # testing formula dumper
                     if DEBUG:
                         fprintf(self.logfile, "FORMULA: rowx=%d colx=%d\n", rowx, colx)
@@ -948,7 +964,6 @@ class Sheet(BaseObject):
                     formula = decompile_formula(bk, data[22:], fmlalen, FMLA_TYPE_CELL,
                         browx=rowx, bcolx=colx, blah=0, r1c1=r1c1)
 
-                    self.formula_map[(colx, rowx)] = formula
                 if result_str[6:8] == b"\xFF\xFF":
                     first_byte = BYTES_ORD(result_str[0])
                     if first_byte == 0:
@@ -973,7 +988,7 @@ class Sheet(BaseObject):
                                 if blah_formulas:
                                     fprintf(self.logfile, "SHRFMLA (sub): %d %d %d %d %d\n",
                                         row1x, rownx, col1x, colnx, nfmlas)
-                                    decompile_formula(bk, data2[10:], tokslen, FMLA_TYPE_SHARED,
+                                    formula = decompile_formula(bk, data2[10:], tokslen, FMLA_TYPE_SHARED,
                                         blah=1, browx=rowx, bcolx=colx, r1c1=r1c1)
                             elif rc2 not in XL_SHRFMLA_ETC_ETC:
                                 raise XLRDError(
@@ -986,25 +1001,25 @@ class Sheet(BaseObject):
                                 raise XLRDError("Expected STRING record; found 0x%04x" % rc2)
                         # if DEBUG: print "STRING: data=%r BIFF=%d cp=%d" % (data2, self.biff_version, bk.encoding)
                         strg = self.string_record_contents(data2)
-                        self.put_cell(rowx, colx, XL_CELL_TEXT, strg, xf_index)
+                        self.put_cell(rowx, colx, XL_CELL_TEXT, strg, xf_index, formula)
                         # if DEBUG: print "FORMULA strg %r" % strg
                     elif first_byte == 1:
                         # boolean formula result
                         value = BYTES_ORD(result_str[2])
-                        self_put_cell(rowx, colx, XL_CELL_BOOLEAN, value, xf_index)
+                        self_put_cell(rowx, colx, XL_CELL_BOOLEAN, value, xf_index, formula)
                     elif first_byte == 2:
                         # Error in cell
                         value = BYTES_ORD(result_str[2])
-                        self_put_cell(rowx, colx, XL_CELL_ERROR, value, xf_index)
+                        self_put_cell(rowx, colx, XL_CELL_ERROR, value, xf_index, formula)
                     elif first_byte == 3:
                         # empty ... i.e. empty (zero-length) string, NOT an empty cell.
-                        self_put_cell(rowx, colx, XL_CELL_TEXT, "", xf_index)
+                        self_put_cell(rowx, colx, XL_CELL_TEXT, "", xf_index, formula)
                     else:
                         raise XLRDError("unexpected special case (0x%02x) in FORMULA" % first_byte)
                 else:
                     # it is a number
                     d = local_unpack('<d', result_str)[0]
-                    self_put_cell(rowx, colx, None, d, xf_index)
+                    self_put_cell(rowx, colx, None, d, xf_index, formula)
             elif rc == XL_BOOLERR:
                 rowx, colx, xf_index, value, is_err = local_unpack('<HHHBB', data[:8])
                 # Note OOo Calc 2.0 writes 9-byte BOOLERR records.
@@ -2328,10 +2343,14 @@ class Cell(BaseObject):
 
     __slots__ = ['ctype', 'value', 'xf_index']
 
-    def __init__(self, ctype, value, xf_index=None):
+    def __init__(self, row, column, ctype, value, formula= None, xf_index=None):
+        self.row = row
+        self.column = column
         self.ctype = ctype
         self.value = value
+        self.formula = formula
         self.xf_index = xf_index
+
 
     def __repr__(self):
         if self.xf_index is None:
@@ -2339,7 +2358,7 @@ class Cell(BaseObject):
         else:
             return "%s:%r (XF:%r)" % (ctype_text[self.ctype], self.value, self.xf_index)
 
-empty_cell = Cell(XL_CELL_EMPTY, UNICODE_LITERAL(''))
+empty_cell = Cell(0, 0, XL_CELL_EMPTY, UNICODE_LITERAL(''))
 
 ##### =============== Colinfo and Rowinfo ============================== #####
 
