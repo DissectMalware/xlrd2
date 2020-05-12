@@ -1015,7 +1015,7 @@ class Book(BaseObject):
                 fmla_len, extsht_index, sheet_index, internal_name)
         name = internal_name
         if nobj.builtin:
-            name = builtin_name_from_code.get(name, "??Unknown??")
+            name = builtin_name_from_code.get(name[0], "??Unknown??")
             if blah: print("    builtin: %s" % name, file=self.logfile)
         nobj.name = name
         nobj.raw_formula = data[pos:]
