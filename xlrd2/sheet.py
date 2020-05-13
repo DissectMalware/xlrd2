@@ -406,6 +406,8 @@ class Sheet(BaseObject):
         # self._put_cell_rows_appended = 0
         # self._put_cell_cells_appended = 0
 
+        self.used_cells = set()
+
     def cell(self, rowx, colx):
         """
         :class:`Cell` object in the given row and column.
@@ -483,6 +485,15 @@ class Sheet(BaseObject):
         return [
             self.cell(rowx, colx)
             for colx in xrange(len(self._cell_values[rowx]))
+        ]
+
+    def get_used_cells(self):
+        """
+        Returns a sequence of the :class:`Cell` objects in the given row.
+        """
+        return [
+            self.cell(rowx, colx)
+            for rowx, colx in self.used_cells
         ]
 
     def __getitem__(self, item):
@@ -691,6 +702,7 @@ class Sheet(BaseObject):
                         scxa(bf * 0)
                 self.nrows = nr
 
+            self.used_cells((rowx, colx))
             types_row = self._cell_types[rowx]
             values_row = self._cell_values[rowx]
             formulas_row = self._cell_formulas[rowx]
@@ -737,6 +749,7 @@ class Sheet(BaseObject):
         # assert 0 <= colx < self.utter_max_cols
         # assert 0 <= rowx < self.utter_max_rows
         try:
+            self.used_cells.add((rowx,colx))
             self._cell_types[rowx][colx] = ctype
             self._cell_values[rowx][colx] = value
             self._cell_formulas[rowx][colx] = formula
