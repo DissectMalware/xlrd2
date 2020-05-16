@@ -397,6 +397,7 @@ class Sheet(BaseObject):
             self.utter_max_rows = 65536
         else:
             self.utter_max_rows = 16384
+
         self.utter_max_cols = 256
 
         self._first_full_rowx = -1
@@ -702,7 +703,7 @@ class Sheet(BaseObject):
                         scxa(bf * 0)
                 self.nrows = nr
 
-            self.used_cells((rowx, colx))
+            self.used_cells.add((rowx, colx))
             types_row = self._cell_types[rowx]
             values_row = self._cell_values[rowx]
             formulas_row = self._cell_formulas[rowx]
