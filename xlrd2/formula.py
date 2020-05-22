@@ -240,6 +240,7 @@ func_defs = {
     119: ('REPLACE',          4,  4, 0x02,  4, 'V', 'VVVV'),
     120: ('SUBSTITUTE',       3,  4, 0x04,  4, 'V', 'VVVV'),
     121: ('CODE',             1,  1, 0x02,  1, 'V', 'V'),
+    0x007B: ('DIRECTORY', 0, 0, 0x00, 0, 'V', ''),
     124: ('FIND',             2,  3, 0x04,  3, 'V', 'VVV'),
     125: ('CELL',             1,  2, 0x0c,  2, 'V', 'VR'),
     126: ('ISERR',            1,  1, 0x02,  1, 'V', 'V'),
@@ -378,7 +379,7 @@ func_defs = {
     0x0109: ('ENABLE.TOOL', 3, 3, 0x00, 3, 'V', 'VVV'),
     0x010A: ('PRESS.TOOL', 3, 3, 0x00, 3, 'V', 'VVV'),
     0x010B: ('REGISTER.ID', 3, 3, 0x00, 3, 'V', 'VVV'),
-    0x010C: ('GET.WORKBOOK', 2, 2, 0x00, 2, 'V', 'VV'),
+    0x010C: ('GET.WORKBOOK', 1, 2, 0x00, 2, 'V', 'VV'),
     269: ('AVEDEV',           1, 30, 0x04,  1, 'V', 'R'),
     270: ('BETADIST',         3,  5, 0x04,  1, 'V', 'V'),
     271: ('GAMMALN',          1,  1, 0x02,  1, 'V', 'V'),
@@ -1553,9 +1554,13 @@ def evaluate_name_formula(bk, nobj, namex, blah=0, level=0):
                           % (funcx, func_name, nargs), file=bk.logfile)
                 assert len(stack) >= nargs
                 if nargs:
-                    argtext = listsep.join(arg.text for arg in stack[-nargs:])
+                    if nargs > 0:
+                        argtext = listsep.join(arg.text for arg in stack[-nargs:])
+                    else:
+                        argtext = ""
                     otext = "%s(%s)" % (func_name, argtext)
-                    del stack[-nargs:]
+                    if nargs > 0:
+                        del stack[-nargs:]
                 else:
                     otext = func_name + "()"
                 res = Operand(oUNK, None, FUNC_RANK, otext)
@@ -2120,9 +2125,13 @@ def decompile_formula(bk, fmla, fmlalen,
                           % (funcx, func_name, nargs), file=bk.logfile)
                 assert len(stack) >= nargs
                 if nargs:
-                    argtext = listsep.join(arg.text for arg in stack[-nargs:])
+                    if nargs>0:
+                        argtext = listsep.join(arg.text for arg in stack[-nargs:])
+                    else:
+                        argtext = ""
                     otext = "%s(%s)" % (func_name, argtext)
-                    del stack[-nargs:]
+                    if nargs > 0:
+                        del stack[-nargs:]
                 else:
                     otext = func_name + "()"
                 res = Operand(oUNK, None, FUNC_RANK, otext)
@@ -2152,10 +2161,14 @@ def decompile_formula(bk, fmla, fmlalen,
                 assert minargs <= nargs <= maxargs
                 assert len(stack) >= nargs
                 assert len(stack) >= nargs
-                argtext = listsep.join(arg.text for arg in stack[-nargs:])
+                if nargs>0:
+                    argtext = listsep.join(arg.text for arg in stack[-nargs:])
+                else:
+                    argtext = ""
                 otext = "%s(%s)" % (func_name, argtext)
                 res = Operand(oUNK, None, FUNC_RANK, otext)
-                del stack[-nargs:]
+                if nargs > 0:
+                    del stack[-nargs:]
                 spush(res)
         elif opcode == 0x03: #tName
             tgtnamex = unpack("<H", data[pos+1:pos+3])[0] - 1
