@@ -1008,7 +1008,7 @@ class Sheet(BaseObject):
                                     fprintf(self.logfile, "SHRFMLA (sub): %d %d %d %d %d\n",
                                         row1x, rownx, col1x, colnx, nfmlas)
                                     formula = decompile_formula(bk, data2[10:], tokslen, FMLA_TYPE_SHARED,
-                                        blah=1, browx=rowx, bcolx=colx, r1c1=r1c1)
+                                        blah=0, browx=rowx, bcolx=colx, r1c1=r1c1)
                             elif rc2 not in XL_SHRFMLA_ETC_ETC:
                                 raise XLRDError(
                                     "Expected SHRFMLA, ARRAY, TABLEOP* or STRING record; found 0x%04x" % rc2)
@@ -1201,7 +1201,7 @@ class Sheet(BaseObject):
                 if blah_formulas:
                     print("SHRFMLA (main):", row1x, rownx, col1x, colnx, nfmlas, file=self.logfile)
                     decompile_formula(bk, data[10:], tokslen, FMLA_TYPE_SHARED,
-                        blah=1, browx=rowx, bcolx=colx, r1c1=r1c1)
+                        blah=0, browx=rowx, bcolx=colx, r1c1=r1c1)
             elif rc == XL_CONDFMT:
                 if not fmt_info: continue
                 assert bv >= 80
