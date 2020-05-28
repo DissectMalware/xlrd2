@@ -2148,7 +2148,12 @@ def decompile_formula(bk, fmla, fmlalen,
                       % (funcx, nargs, macro, prompt), file=bk.logfile)
             #### TODO #### if funcx == 255: # call add-in function
             if funcx == 255:
-                func_attrs = ("CALL_ADDIN", 1, 30)
+                if len(stack) > 0:
+                    nargs -= 1
+                    func_attrs = (stack[-1].text, nargs, nargs)
+                    del stack[-1]
+                else:
+                    func_attrs = ("CALL_ADDIN", 1, 30)
             else:
                 func_attrs = func_defs.get(funcx_val, None)
             if not func_attrs:
