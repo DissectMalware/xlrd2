@@ -2150,8 +2150,8 @@ def decompile_formula(bk, fmla, fmlalen,
             if funcx == 255:
                 if len(stack) > 0:
                     nargs -= 1
-                    func_attrs = (stack[-1].text, nargs, nargs)
-                    del stack[-1]
+                    func_attrs = (stack[0].text, nargs, nargs)
+                    del stack[0]
                 else:
                     func_attrs = ("CALL_ADDIN", 1, 30)
             else:
