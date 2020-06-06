@@ -893,6 +893,8 @@ tAttrNames = {
     0x41: "SpaceVolatile",
 }
 
+func_names = set([func[0] for index, func in func_defs.items()])
+
 error_opcodes = set([0x07, 0x08, 0x0A, 0x0B, 0x1C, 0x1D, 0x2F])
 
 tRangeFuncs = (min, max, min, max, min, max)
@@ -2150,8 +2152,16 @@ def decompile_formula(bk, fmla, fmlalen,
             if funcx == 255:
                 if len(stack) > 0:
                     nargs -= 1
-                    func_attrs = (stack[0].text, nargs, nargs)
-                    del stack[0]
+                    if '(' in stack[0].text:
+                        text = stack[0].text[:stack[0].text.index('(')]
+                    else:
+                        text = stack[0].text
+                    if text not in func_names:
+                        func_attrs = (stack[0].text, nargs, nargs)
+                        del stack[0]
+                    else:
+                        func_attrs = (stack[-1].text, nargs, nargs)
+                        del stack[-1]
                 else:
                     func_attrs = ("CALL_ADDIN", 1, 30)
             else:
