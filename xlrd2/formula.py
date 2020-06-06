@@ -2638,10 +2638,15 @@ def rangename2drel(rlo_rhi_clo_chi, rlorel_rhirel_clorel_chirel, browx=None, bco
         r1c1 = True
     if (clorel or chirel) and bcolx is None:
         r1c1 = True
-    return "%s:%s" % (
-        cellnamerel(rlo,   clo,   rlorel, clorel, browx, bcolx, r1c1),
-        cellnamerel(rhi-1, chi-1, rhirel, chirel, browx, bcolx, r1c1),
-    )
+    start_cell = cellnamerel(rlo, clo, rlorel, clorel, browx, bcolx, r1c1)
+    end_cell = cellnamerel(rhi - 1, chi - 1, rhirel, chirel, browx, bcolx, r1c1)
+    if start_cell == end_cell:
+        return str(start_cell)
+    else:
+        return "%s:%s" % (
+            cellnamerel(rlo, clo, rlorel, clorel, browx, bcolx, r1c1),
+            cellnamerel(rhi - 1, chi - 1, rhirel, chirel, browx, bcolx, r1c1),
+        )
 
 
 def rangename3d(book, ref3d):
