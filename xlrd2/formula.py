@@ -2683,11 +2683,11 @@ def quotedsheetname(shnames, shx):
             -3: "internal; macro sheet",
             -4: "<<external>>",
         }.get(shx, "?error %d?" % shx)
-    if "'" in shname:
-        return "'" + shname.replace("'", "''") + "'"
-    if " " in shname:
-        return "'" + shname + "'"
-    return shname
+    # if "'" in shname:
+    #     return "'" + shname.replace("'", "''") + "'"
+    # if " " in shname:
+    #     return "'" + shname + "'"
+    return "'" + shname + "'"
 
 def sheetrange(book, slo, shi):
     shnames = book.sheet_names()
