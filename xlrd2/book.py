@@ -612,6 +612,7 @@ class Book(BaseObject):
         self.style_name_map = {}
         self.mem = b''
         self.filestr = b''
+        self.label_names = set()
 
     def biff2_8_load(self, filename=None, file_contents=None,
                      logfile=sys.stdout, verbosity=0, use_mmap=USE_MMAP,
@@ -1004,6 +1005,11 @@ class Book(BaseObject):
             internal_name, pos = unpack_string_update_pos(data, 14, self.encoding, known_len=name_len)
         else:
             internal_name, pos = unpack_unicode_update_pos(data, 14, known_len=name_len)
+
+        if internal_name in self.label_names:
+            internal_name = internal_name + str(nobj.name_index )
+
+        self.label_names.add(internal_name)
         nobj.extn_sheet_num = extsht_index
         nobj.excel_sheet_index = sheet_index
         nobj.scope = None # patched up in the names_epilogue() method
