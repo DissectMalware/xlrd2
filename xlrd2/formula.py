@@ -2156,12 +2156,16 @@ def decompile_formula(bk, fmla, fmlalen,
                         text = stack[0].text[:stack[0].text.index('(')]
                     else:
                         text = stack[0].text
-                    if text not in func_names:
-                        func_attrs = (stack[0].text, nargs, nargs)
-                        del stack[0]
-                    else:
-                        func_attrs = (stack[-1].text, nargs, nargs)
-                        del stack[-1]
+
+                    # function alias (REGISTER(
+                    # c45ed3a0ce5df27ac29e0fab99dc4d462f61a0d0c025e9161ced3b2c913d57d8
+                    # e314ea8492fec8fb7349f966eab30ae0f8dfad22d08fe914a2d88e5056b9451f
+                    # 51222fba832e8ef753f3896c6dabaedb83e083d6b9d014427eca5e0680c94642
+                    # f54c760aee14a3a904af230dabe3c69e7c9c0e7040d9594a393c054587c21505
+                    func_name_index = len(stack) - nargs - 1
+                    func_attrs = (stack[func_name_index].text, nargs, nargs)
+                    del stack[func_name_index]
+
                 else:
                     func_attrs = ("CALL_ADDIN", 1, 30)
             else:
