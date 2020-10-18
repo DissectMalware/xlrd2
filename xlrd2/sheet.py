@@ -417,6 +417,7 @@ class Sheet(BaseObject):
             xfx = self.cell_xf_index(rowx, colx)
         else:
             xfx = None
+
         return Cell(
             rowx,
             colx,
@@ -660,6 +661,7 @@ class Sheet(BaseObject):
             ncols = self.ncols
             s_cell_types = self._cell_types
             s_cell_values = self._cell_values
+            s_cell_formula = self._cell_formulas
             s_cell_xf_indexes = self._cell_xf_indexes
             s_fmt_info = self.formatting_info
             # for rowx in xrange(self.nrows):
@@ -673,6 +675,7 @@ class Sheet(BaseObject):
                 nextra = ncols - rlen
                 if nextra > 0:
                     s_cell_values[rowx][rlen:] = [UNICODE_LITERAL('')] * nextra
+                    s_cell_formula[rowx][rlen:] = [UNICODE_LITERAL('')] * nextra
                     trow[rlen:] = self.bt * nextra
                     if s_fmt_info:
                         s_cell_xf_indexes[rowx][rlen:] = self.bf * nextra

@@ -14,3 +14,4 @@ MANIFEST
 /include
 /lib
 .idea/
+venv/
