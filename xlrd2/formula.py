@@ -363,7 +363,7 @@ func_defs = {
     0x00F5: ('GROUP', 0,	0,	0x00,	0, 'V', ''),
     0x00F6: ('GET.OBJECT', 1,	5,	0x00,	4, 'V', 'VVVVV'),
     247: ('DB',               4,  5, 0x04,  5, 'V', 'VVVVV'),
-    0x00F8: ('PAUSE', 1,	1,	0x00,	1, 'V', 'V'),
+    0x00F8: ('PAUSE', 0,	1,	0x00,	1, 'V', 'V'),
     0x00FB: ('RESUME', 1,	1,	0x00,	1, 'V', 'V'),
     252: ('FREQUENCY',        2,  2, 0x02,  2, 'A', 'RR'),
     0x00FD: ('ADD.TOOLBAR', 0, 2, 0x00, 2, 'V', 'VV'),
