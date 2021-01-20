@@ -21,7 +21,7 @@ from .biffh import (
 from .timemachine import *
 
 __all__ = [
-    'oBOOL', 'oERR', 'oNUM', 'oREF', 'oREL', 'oSTRG', 'oUNK',
+    'oBOOL', 'oERR', 'oNUM', 'oREF', 'oARR', 'oREL', 'oSTRG', 'oUNK',
     'decompile_formula',
     'dump_formula',
     'evaluate_name_formula',
@@ -1561,7 +1561,8 @@ def evaluate_name_formula(bk, nobj, namex, blah=0, level=0):
                 elif rec_type == 2: #string (Unicode Strings in BIFF8)
                     size, option = unpack("< HB", data[index: index + 3])
                     index += 3
-                    arr_data = data[index: index+size]
+                    # assuming the first bit of option is 0, meaning it is a compressed unicode string
+                    arr_data = data[index: index+size].decode('ascii')
                     array.append(arr_data)
                     index += size
                 else:
