@@ -78,6 +78,7 @@ oREF = -1
 oREL = -2
 oSTRG = 1
 oUNK =  0
+oARR = 6
 
 okind_dict = {
     -2: "oREL",
@@ -88,6 +89,7 @@ okind_dict = {
     3 : "oBOOL",
     4 : "oERR",
     5 : "oMSNG",
+    6 : "oARR"
 }
 
 listsep = ',' #### probably should depend on locale
@@ -1542,7 +1544,34 @@ def evaluate_name_formula(bk, nobj, namex, blah=0, level=0):
             pos += sz
             continue
         if opcode == 0x00: # tArray
-            spush(unk_opnd)
+            # MICROSOFT OFFICE EXCEL 97-2007 BINARY FILE FORMAT SPECIFICATION
+            # ptgArray: Array Constant (page 304)
+            # https://www.loc.gov/preservation/digital/formats/digformatspecs/Excel97-2007BinaryFileFormat(xls)Specification.pdf
+
+            array =[]
+            index = pos + 11
+
+            while(True):
+                (rec_type,) = unpack("B", data[index: index + 1])
+                index += 1
+                if rec_type == 1: # float 8bytes
+                    (float_data,) = unpack("< d", data[index: index + 8])
+                    array.append(float_data)
+                    index += 8
+                elif rec_type == 2: #string (Unicode Strings in BIFF8)
+                    size, option = unpack("< HB", data[index: index + 3])
+                    index += 3
+                    arr_data = data[index: index+size]
+                    array.append(arr_data)
+                    index += size
+                else:
+                    break
+
+                if index >= len(data):
+                    break
+
+            res = Operand(oARR, array, FUNC_RANK, str(array) )
+            spush(res)
         elif opcode == 0x01: # tFunc
             nb = 1 + int(bv >= 40)
             funcx = unpack("<" + " BH"[nb], data[pos+1:pos+1+nb])[0]
