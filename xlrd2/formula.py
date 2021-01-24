@@ -1921,13 +1921,13 @@ def decompile_formula(bk, fmla, fmlalen,
         aop = stk.pop()
         argdict, result_kind, func, rank, sym = binop_rules[opcd]
         otext = ''.join([
-            '('[:aop.rank < rank],
+            '('[:aop.rank <= rank],
             aop.text,
-            ')'[:aop.rank < rank],
+            ')'[:aop.rank <= rank],
             sym,
-            '('[:bop.rank < rank],
+            '('[:bop.rank <= rank],
             bop.text,
-            ')'[:bop.rank < rank],
+            ')'[:bop.rank <= rank],
         ])
         resop = Operand(result_kind, None, rank, otext)
         stk.append(resop)
