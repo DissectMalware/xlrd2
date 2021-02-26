@@ -244,7 +244,7 @@ func_defs = {
     119: ('REPLACE',          4,  4, 0x02,  4, 'V', 'VVVV'),
     120: ('SUBSTITUTE',       3,  4, 0x04,  4, 'V', 'VVVV'),
     121: ('CODE',             1,  1, 0x02,  1, 'V', 'V'),
-    0x007B: ('DIRECTORY', 0, 0, 0x00, 0, 'V', ''),
+    0x007B: ('DIRECTORY', 0, 1, 0x00, 0, 'V', 'V'),
     124: ('FIND',             2,  3, 0x04,  3, 'V', 'VVV'),
     125: ('CELL',             1,  2, 0x0c,  2, 'V', 'VR'),
     126: ('ISERR',            1,  1, 0x02,  1, 'V', 'V'),
