@@ -1072,7 +1072,9 @@ class Book(BaseObject):
         for namex in range(num_names):
             nobj = self.name_obj_list[namex]
             # Parse the formula ...
-            if nobj.macro or nobj.binary: continue
+            if nobj.macro:
+                dump_formula(self, nobj.raw_formula, len(nobj.raw_formula), self.biff_version, reldelta=0, blah=0)
+            if nobj.binary: continue
             if nobj.evaluated: continue
             evaluate_name_formula(self, nobj, namex, blah=blah)
 
