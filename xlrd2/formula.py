@@ -919,9 +919,9 @@ def adjust_cell_addr_biff8(rowval, colval, reldelta, browx=None, bcolx=None):
         if col_rel and colx >= 128:
             colx -= 256
     else:
-        if row_rel:
+        if row_rel and browx:
             rowx -= browx
-        if col_rel:
+        if col_rel and bcolx:
             colx -= bcolx
     return rowx, colx, row_rel, col_rel
 
