@@ -983,7 +983,7 @@ class Sheet(BaseObject):
                     if DEBUG:
                         fprintf(self.logfile, "FORMULA: rowx=%d colx=%d\n", rowx, colx)
                     fmlalen = local_unpack("<H", data[20:22])[0]
-                    formula = decompile_formula(bk, data[22:], fmlalen, FMLA_TYPE_CELL,
+                    formula = decompile_formula(bk, data[22:], fmlalen, FMLA_TYPE_CELL, sheet_id=self.number,
                         browx=rowx, bcolx=colx, blah=0, r1c1=r1c1)
 
                 if result_str[6:8] == b"\xFF\xFF":

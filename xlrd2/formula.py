@@ -1894,7 +1894,7 @@ def evaluate_name_formula(bk, nobj, namex, blah=0, level=0):
 #### under construction #############################################################################
 def decompile_formula(bk, fmla, fmlalen,
                       fmlatype=None, browx=None, bcolx=None,
-                      blah=0, level=0, r1c1=0):
+                      blah=0, level=0, r1c1=0, sheet_id=0):
     if level > STACK_ALARM_LEVEL:
         blah = 1
     reldelta = fmlatype in (FMLA_TYPE_SHARED, FMLA_TYPE_NAME, FMLA_TYPE_COND_FMT, FMLA_TYPE_DATA_VAL)
@@ -2354,7 +2354,7 @@ def decompile_formula(bk, fmla, fmlalen,
             coords = (shx1, shx2+1, rowx1, rowx2+1, colx1, colx2+1)
             if blah: print("   ", coords, file=bk.logfile)
             res = Operand(oUNK, None)
-            if is_rel:
+            if is_rel and sheet_id == coords[0]:
                 relflags = (0, 0, row_rel1, row_rel2, col_rel1, col_rel2)
                 ref3d = Ref3D(coords + relflags)
                 res.kind = oREL
