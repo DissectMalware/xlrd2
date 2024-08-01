@@ -43,7 +43,7 @@ __ https://pypi.org/project/defusedxml/
 
     import defusedxml
     from defusedxml.common import EntitiesForbidden
-    from xlrd import open_workbook
+    from xlrd2 import open_workbook
     defusedxml.defuse_stdlib()
 
 
